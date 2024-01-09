@@ -4,10 +4,33 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.dam23_24.ejemploroom.addtasks.domain.AddTaskUseCase
+import com.dam23_24.ejemploroom.addtasks.domain.DeleteTaskUseCase
+import com.dam23_24.ejemploroom.addtasks.domain.GetTasksUseCase
+import com.dam23_24.ejemploroom.addtasks.domain.UpdateTaskUseCase
+import com.dam23_24.ejemploroom.addtasks.ui.TaskUIState.*
 import com.dam23_24.ejemploroom.addtasks.ui.model.TaskModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class TasksViewModel @Inject constructor(): ViewModel() {
+@HiltViewModel
+class TasksViewModel @Inject constructor(
+    private val addTaskUseCase: AddTaskUseCase,
+    private val updateTaskUseCase: UpdateTaskUseCase,
+    private val deleteTaskUseCase: DeleteTaskUseCase,
+    getTasksUseCase: GetTasksUseCase
+): ViewModel() {
+
+    val uiState: StateFlow<TaskUIState> = getTasksUseCase().map(::Success)
+        .catch { Error(it) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), Loading)
 
     private val _showDialog = MutableLiveData<Boolean>()
     val showDialog: LiveData<Boolean> = _showDialog
@@ -15,24 +38,17 @@ class TasksViewModel @Inject constructor(): ViewModel() {
     private val _myTaskText = MutableLiveData<String>()
     val myTaskText: LiveData<String> = _myTaskText
 
-    //Utilizamos mutableStateListOf porque se lleva mejor con LazyColumn a la hora
-    //de refrescar la información en la vista...
-    private val _tasks = mutableStateListOf<TaskModel>()
-    val tasks: List<TaskModel> = _tasks
-
     fun onDialogClose() {
         _showDialog.value = false
     }
 
-    /*fun onTaskCreated(task: String) {
-        onDialogClose()
-        //Log.i("dam2", task)
-        _tasks.add(TaskModel(task = task))
-    }*/
-
     fun onTaskCreated() {
         onDialogClose()
-        _tasks.add(TaskModel(task = _myTaskText.value ?: ""))
+
+        viewModelScope.launch {
+            addTaskUseCase(TaskModel(task = _myTaskText.value ?: ""))
+        }
+
         _myTaskText.value = ""
     }
 
@@ -41,19 +57,15 @@ class TasksViewModel @Inject constructor(): ViewModel() {
     }
 
     fun onItemRemove(taskModel: TaskModel) {
-        //Así no es posible por el uso de let con copy para modificar el checkbox...
-        //_tasks.remove(taskModel)
-
-        //Debemos buscar en la lista por el id
-        val task = _tasks.find { it.id == taskModel.id }
-        _tasks.remove(task)
+        viewModelScope.launch {
+            deleteTaskUseCase(taskModel)
+        }
     }
 
     fun onCheckBoxSelected(taskModel: TaskModel) {
-        val index = _tasks.indexOf(taskModel)
-
-        //Lo hacemos así para que se recomponga sin problemas en la vista...
-        _tasks[index] = _tasks[index].let { it.copy(selected = !it.selected) }
+        viewModelScope.launch {
+            updateTaskUseCase(taskModel.copy(selected = !taskModel.selected))
+        }
     }
 
     fun onTaskTextChanged(taskText: String) {
