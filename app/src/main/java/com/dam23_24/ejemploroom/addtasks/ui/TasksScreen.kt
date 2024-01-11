@@ -143,6 +143,12 @@ fun ItemTask (
     onTaskCheckChanged: (TaskModel) -> Unit
 ) {
     Card(
+        //pointerInput es una función se utiliza para configurar la entrada de puntero (input)
+        //para el componente visual al que se le aplica... la detección de gestos de entrada táctil
+        //En nuestro caso queremos eliminar una tarea con el gesto de pulsación larga (onLongPress)
+        //sobre la tarea, por lo tanto el componente visual dónde aplicar el modificador debe ser el Card.
+        //En la expresión lambda no podemos utilizar it como parámetro de la llamada a onTaskRemove(it)
+        //it es el Offset y nosotros necesitamos pasarle el taskModel que debe eliminarse...
         Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
