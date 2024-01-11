@@ -56,13 +56,21 @@ fun TasksScreen(tasksViewModel: TasksViewModel) {
         key2 = tasksViewModel
     ){
         lifecycle.repeatOnLifecycle(state = Lifecycle.State.STARTED) {
-            tasksViewModel.uiState.collect{ value = it}
+            tasksViewModel.uiState.collect{ value = it }
         }
     }
 
     when (uiState) {
-        is TaskUIState.Error -> {}
-        TaskUIState.Loading -> { CircularProgressIndicator() }
+        is TaskUIState.Error -> {  }
+        is TaskUIState.Loading -> {
+            Box(modifier = Modifier.fillMaxSize()) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .size(150.dp)
+                        .align(Alignment.Center)
+                )
+            }
+        }
         is TaskUIState.Success -> {
             Box(modifier = Modifier.fillMaxSize()) {
                 AddTasksDialog(

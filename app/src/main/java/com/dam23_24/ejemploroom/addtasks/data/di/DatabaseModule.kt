@@ -2,7 +2,6 @@ package com.dam23_24.ejemploroom.addtasks.data.di
 
 import android.content.Context
 import androidx.room.Room
-import com.dam23_24.ejemploroom.TasksManageApp
 import com.dam23_24.ejemploroom.addtasks.data.TaskDao
 import com.dam23_24.ejemploroom.addtasks.data.TasksManageDatabase
 import dagger.Module
@@ -22,7 +21,7 @@ class DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideTasksMAnageDatabase(@ApplicationContext appContext: Context): TasksManageDatabase {
+    fun provideTasksManageDatabase(@ApplicationContext appContext: Context): TasksManageDatabase {
         return Room.databaseBuilder(appContext, TasksManageDatabase::class.java, "TaskDatabase").build()
     }
 }
