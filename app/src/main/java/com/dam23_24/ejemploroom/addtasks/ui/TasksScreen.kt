@@ -124,6 +124,8 @@ fun TasksList(tasksViewModel: TasksViewModel) {
     val myTasks: List<TaskModel> = tasksViewModel.tasks
 
     LazyColumn {
+        //El parámetro opcional key ayuda a optimizar el LazyColumn
+        //Al indicarle que la clave es el id va a ser capaz de identificar cada tarea sin problemas
         items(myTasks, key = { it.id }) { task ->
             ItemTask(
                 task,
@@ -139,7 +141,6 @@ fun ItemTask (
     taskModel: TaskModel,
     onTaskRemove: (TaskModel) -> Unit,
     onTaskCheckChanged: (TaskModel) -> Unit
-
 ) {
     Card(
         Modifier

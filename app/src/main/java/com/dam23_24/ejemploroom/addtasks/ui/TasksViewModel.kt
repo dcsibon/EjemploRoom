@@ -1,12 +1,15 @@
 package com.dam23_24.ejemploroom.addtasks.ui
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.dam23_24.ejemploroom.addtasks.ui.model.TaskModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
+@HiltViewModel
 class TasksViewModel @Inject constructor(): ViewModel() {
 
     private val _showDialog = MutableLiveData<Boolean>()
@@ -24,14 +27,9 @@ class TasksViewModel @Inject constructor(): ViewModel() {
         _showDialog.value = false
     }
 
-    /*fun onTaskCreated(task: String) {
-        onDialogClose()
-        //Log.i("dam2", task)
-        _tasks.add(TaskModel(task = task))
-    }*/
-
     fun onTaskCreated() {
         onDialogClose()
+        //Log.i("dam2", _myTaskText.value ?: "")
         _tasks.add(TaskModel(task = _myTaskText.value ?: ""))
         _myTaskText.value = ""
     }
@@ -40,11 +38,13 @@ class TasksViewModel @Inject constructor(): ViewModel() {
         _showDialog.value = true
     }
 
-    fun onItemRemove(taskModel: TaskModel) {
-        //Así no es posible por el uso de let con copy para modificar el checkbox...
-        //_tasks.remove(taskModel)
+    fun onTaskTextChanged(taskText: String) {
+        _myTaskText.value = taskText
+    }
 
-        //Debemos buscar en la lista por el id
+    fun onItemRemove(taskModel: TaskModel) {
+        //No podemos usar directamente _tasks.remove(taskModel) porque no es posible por el uso de let con copy para modificar el checkbox...
+        //Para hacerlo correctamente, debemos previamente buscar la tarea en la lista por el id y después eliminarla
         val task = _tasks.find { it.id == taskModel.id }
         _tasks.remove(task)
     }
@@ -52,12 +52,9 @@ class TasksViewModel @Inject constructor(): ViewModel() {
     fun onCheckBoxSelected(taskModel: TaskModel) {
         val index = _tasks.indexOf(taskModel)
 
-        //Lo hacemos así para que se recomponga sin problemas en la vista...
+        //Si se modifica directamente _tasks no se recompone en el LazyColumn
+        //Para solucionarlo y que se recomponga sin problemas en la vista, lo hacemos con un let...
         _tasks[index] = _tasks[index].let { it.copy(selected = !it.selected) }
-    }
-
-    fun onTaskTextChanged(taskText: String) {
-        _myTaskText.value = taskText
     }
 
 }
