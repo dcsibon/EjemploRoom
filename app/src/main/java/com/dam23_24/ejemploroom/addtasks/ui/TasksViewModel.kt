@@ -54,11 +54,9 @@ class TasksViewModel @Inject constructor(
 
     fun onTaskCreated() {
         onDialogClose()
-
         viewModelScope.launch {
             addTaskUseCase(TaskModel(task = _myTaskText.value ?: ""))
         }
-
         _myTaskText.value = ""
     }
 
