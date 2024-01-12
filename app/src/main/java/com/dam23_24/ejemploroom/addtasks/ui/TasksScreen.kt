@@ -50,8 +50,8 @@ fun TasksScreen(tasksViewModel: TasksViewModel) {
     val myTaskText: String by tasksViewModel.myTaskText.observeAsState("")
     val lifecycle = LocalLifecycleOwner.current.lifecycle
 
-    val uiState by produceState<TaskUIState>(
-        initialValue = TaskUIState.Loading,
+    val uiState by produceState<TaskUiState>(
+        initialValue = TaskUiState.Loading,
         key1 = lifecycle,
         key2 = tasksViewModel
     ){
@@ -61,8 +61,8 @@ fun TasksScreen(tasksViewModel: TasksViewModel) {
     }
 
     when (uiState) {
-        is TaskUIState.Error -> {  }
-        is TaskUIState.Loading -> {
+        is TaskUiState.Error -> {  }
+        is TaskUiState.Loading -> {
             Box(modifier = Modifier.fillMaxSize()) {
                 CircularProgressIndicator(
                     modifier = Modifier
@@ -71,7 +71,7 @@ fun TasksScreen(tasksViewModel: TasksViewModel) {
                 )
             }
         }
-        is TaskUIState.Success -> {
+        is TaskUiState.Success -> {
             Box(modifier = Modifier.fillMaxSize()) {
                 AddTasksDialog(
                     show = showDialog,
@@ -83,7 +83,7 @@ fun TasksScreen(tasksViewModel: TasksViewModel) {
                 FabDialog(
                     Modifier.align(Alignment.BottomEnd),
                     onNewTask = { tasksViewModel.onShowDialogClick() })
-                TasksList((uiState as TaskUIState.Success).tasks, tasksViewModel)
+                TasksList((uiState as TaskUiState.Success).tasks, tasksViewModel)
             }
         }
     }
