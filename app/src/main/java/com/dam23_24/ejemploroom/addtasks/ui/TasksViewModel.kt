@@ -19,6 +19,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+//El parámetro getTasksUseCase del constructor se inyecta sin private val porque no nos hace falta
+// ya que lo vamos a utilizar directamente en la variable uiState que gestionará los estados de la ui.
 @HiltViewModel
 class TasksViewModel @Inject constructor(
     private val addTaskUseCase: AddTaskUseCase,
@@ -27,8 +29,8 @@ class TasksViewModel @Inject constructor(
     getTasksUseCase: GetTasksUseCase
 ): ViewModel() {
 
-    //La función getTasksUseCase() nos devuelve el Flow continuo y cada vez que actualice los datos
-    //va a pasarlo a Success (ver data class en TaskUiState).
+    //El caso de uso getTasksUseCase() nos devuelve el Flow continuo y cada vez que actualice
+    //los datos va a pasarlo a Success (ver data class en TaskUiState).
     //Si por algún motivo falla y existe algún error, lo vamos a capturar y enviar al estado Error
     //con el parámetro de la excepción que ha generado.
     //El último modificador hará que cuando mi app o la pantalla esté en segundo plano hasta que no
