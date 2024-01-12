@@ -149,7 +149,6 @@ fun AddTasksDialog(
 
 @Composable
 fun TasksList(tasks: List<TaskModel>, tasksViewModel: TasksViewModel) {
-
     LazyColumn {
         items(tasks, key = { it.id }) { task ->
             ItemTask(
@@ -166,7 +165,6 @@ fun ItemTask (
     taskModel: TaskModel,
     onTaskRemove: (TaskModel) -> Unit,
     onTaskCheckChanged: (TaskModel) -> Unit
-
 ) {
     Card(
         Modifier
