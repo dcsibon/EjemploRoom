@@ -23,7 +23,9 @@ class TaskRepository @Inject constructor(private val taskDao: TaskDao) {
     val tasks: Flow<List<TaskModel>> = taskDao.getTasks().map { items -> items.map { TaskModel(it.id, it.task, it.selected) } }
 
     suspend fun add(taskModel: TaskModel) {
-        taskDao.addTask(taskModel.toData())
+        taskDao.addTask(
+            TaskEntity(taskModel.id, taskModel.task, taskModel.selected)
+        )
     }
 
     suspend fun update(taskModel: TaskModel) {
