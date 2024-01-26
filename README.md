@@ -45,6 +45,6 @@ Vamos a ver cómo funciona, cómo comienza la app, la inyección de dependencias
 ### Inyección de Dependencias
 
 - Hilt proporciona las dependencias necesarias para cada clase. Por ejemplo, `TasksViewModel` recibe los casos de uso, y `TaskRepository` recibe `TaskDao`,
-- que a su vez es proporcionado por el módulo de Hilt (`DatabaseModule`).
+  que a su vez es proporcionado por el módulo de Hilt (`DatabaseModule`).
 
 Este código es un ejemplo de cómo utilizar estas tecnologías juntas para crear una aplicación Android robusta y bien estructurada siguiendo el patrón MVVM.
